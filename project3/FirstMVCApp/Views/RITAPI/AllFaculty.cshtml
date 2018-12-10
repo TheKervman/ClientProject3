@@ -1,0 +1,164 @@
+﻿@model Faculty
+@{
+    ViewBag.Title = "AllFaculty";
+}
+
+<style type="text/css">
+    .ui-corner-all {
+        border-color: lightskyblue;
+    }
+
+    .ui-button, .ui-button-text .ui-button {
+        font-size: small;
+    }
+
+    .ui-widget {
+        font-size: small;
+    }
+
+    .webgrid-table td, th {
+        border: 1px solid #98BF21;
+    }
+
+    .webgrid-header {
+        background-color: #A7C942;
+        color: #FFFFFF;
+        text-align: center;
+    }
+
+    .webgrid-alternating-row {
+        background-color: #EAF2D3;
+    }
+
+    .colWidth {
+        width: 200px;
+        text-align: center;
+    }
+
+    .colWidth1 {
+        width: 200px;
+        padding-left: 1em;
+    }
+
+    .colWidth2 {
+        width: 200px;
+        padding-left: 2em;
+    }
+
+    #Outer {
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    }
+
+    #GridBody {
+        width: 1400px;
+        height: 225px;
+        overflow-y: scroll;
+        border: solid 1px #e8eef4;
+    }
+
+    #GridHeader table {
+        width: 1402px;
+        text-align: left;
+        margin-top: 0px;
+        border: solid 1px #A7C942;
+        padding: 0px;
+        border-collapse: collapse;
+    }
+
+    #GridFooter {
+        border: solid 1px #e8eef4;
+        width: 1400px;
+    }
+
+    #GridHeader table th {
+        width: 200px;
+        text-align: center;
+    }
+
+    .ui-widget {
+        font-size: small;
+    }
+
+    .img {
+        position: relative;
+        float: left;
+        width: 200px;
+        height: 200px;
+        background-position: 50% 50%;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+</style>
+
+@using System.Data;
+@using System.Web.UI.WebControls;
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
+@using Newtonsoft.Json.Serialization;
+
+@{
+    if (Session["returnedJSON"] == null)
+    {
+        return;
+    }
+    People peopleModel = JsonConvert.DeserializeObject<People>(Session["returnedJSON"].ToString());
+    var facMembers = peopleModel.faculty.ToList();
+    foreach (var item in facMembers)
+    {
+        //if (item.name.Contains("."))
+        //{
+        //    var editName = item.name.Replace(".", "%2E");
+        //    item.name = editName;
+        //}
+    }
+    var grid = new WebGrid(source: facMembers, canSort: false);
+}
+<form id="AllFaculty" method="post" class="form-horizontal">
+    <div class="form-group">
+        <div class="col-lg-12">
+            &nbsp;
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-lg-12">
+            <h3><b>Faculty Listing</b></h3>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-lg-12">
+            &nbsp;
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-lg-12">
+            &nbsp;
+        </div>
+    </div>
+    <div class="form-group">
+        <div id="gridContent" class="col-lg-12">
+            @grid.GetHtml(
+            tableStyle: "webgrid-table",
+            headerStyle: "webgrid-header",
+            footerStyle: "webgrid-footer",
+            alternatingRowStyle: "webgrid-alternating-row",
+            selectedRowStyle: "webgrid-selected-row",
+            rowStyle: "webgrid-row-style",
+            mode: WebGridPagerModes.All,
+            htmlAttributes: new { id = "DataTable" },
+            columns:
+                grid.Columns(
+                        grid.Column("name", "Name", format: @<text> @Html.ActionLink(linkText: (string)@item.Name, actionName: "SelectedFaculty1", routeValues: new { name = item.name })</text>, style: "colWidth1"),
+                        grid.Column(columnName: "title ", header: "Title", format: @<text>@item.title</text>, style: "colWidth1"),
+                        grid.Column(columnName: "email ", header: "Email", format: @<text>@item.email</text>, style: "colWidth1")))
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-lg-12">
+            <div id="Outer">
+                <div id="GridHeader"></div>
+                <div id="GridBody"></div>
+                <div id="GridFooter"></div>
+            </div>
+        </div>
+    </div>
+</form>

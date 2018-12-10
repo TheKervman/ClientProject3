@@ -1,0 +1,133 @@
+﻿@model Faculty
+@{
+    ViewBag.Title = "SelectedFaculty";
+}
+
+<style type="text/css">
+    .ui-selectmenu-text {
+        font-size: small;
+    }
+
+    .ui-corner-all {
+        border-color: lightskyblue;
+    }
+
+    .ui-button, .ui-button-text .ui-button {
+        font-size: small;
+    }
+
+    .ui-widget {
+        font-size: small;
+    }
+
+    .img {
+        position: relative;
+        float: left;
+        width: 200px;
+        height: 200px;
+        background-position: 50% 50%;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+</style>
+
+@using System.Data;
+@using System.Web.UI.WebControls;
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
+@using Newtonsoft.Json.Serialization;
+@{
+    if (Session["returnedJSON"] == null)
+    {
+        return;
+    }
+
+    People peopleModel = JsonConvert.DeserializeObject<People>(Session["returnedJSON"].ToString());
+    var facMembers = peopleModel.faculty.ToList();
+}
+
+<script src="~/Scripts/jquery-3.3.1.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#Select1").selectmenu({
+            change: function (event, ui) {
+                console.log("change");
+                $.ajax({
+                    url: '@Url.Action("GetSelectedFaculty", "RITAPI")',
+                    data: { facultyName: ui.item.value },
+                    type: "GET",
+                    success: function (data) {
+                        var selectedFaculty = JSON.parse(data);
+
+                        console.log(selectedFaculty);
+
+                        console.log(selectedFaculty.imagePath);
+
+                        var myDiv2 = document.getElementById("myDiv2");
+                        myDiv2.style = "background-image:url('" + selectedFaculty.imagePath + "');";
+
+                    },
+                    error: function (thrownError) {
+                        console.log(thrownError.statusText);
+                        $("#dialog1").text(thrownError.statusText);
+                        $("#dialog1").dialog("open");
+                    }
+                });
+
+            }
+        });
+
+        // THIS IS THE WAY WE USED TO DO IT
+        //selectList = document.getElementById("Select1");
+        //var facultyJSON = JSON.parse(faculty);
+        //$.each(facultyJSON.faculty, function (i, item) {
+        //    console.log($(this));
+        //    console.log(item.name);
+        //    var option = document.createElement("option");
+        //    option.text = item.name;
+        //    option.value = item.name;
+        //    selectList.appendChild(option);
+        //    $("#Select1").selectmenu("refresh");
+        //});
+    });
+</script>
+<form id="SelectedFaculty">
+    <h2>Select A Faculty Member</h2>
+    <div id="myDIv1">
+        <h3>To View More About RIT Faculty, Make A Selection Below</h3>
+
+        <select id="Select1">
+            <option value="">Select Faculty Member</option>
+
+            @foreach (var item in facMembers)
+            {
+                <option value="@item.name">@item.name</option>
+            }
+        </select>
+    </div>
+    <!-- Uncomment the code below to see the unordered list built with C# -->
+    @*<div>
+        <ul>
+            @foreach (var item in facMembers)
+            {
+                <li>@item.name</li>
+            }
+        </ul>
+    </div>*@
+    <div id="myDiv2" class="img">
+
+    </div>
+    <hr />
+    <hr />
+    <hr />
+    <hr />
+    <hr />
+    <hr />
+    <hr />
+    <hr />
+    <hr />
+    <hr />
+    <hr />
+</form>
+

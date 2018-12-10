@@ -1,0 +1,90 @@
+﻿
+@{
+    ViewBag.Title = "SelectDegree";
+}
+
+@using System.Data;
+@using System.Web.UI.WebControls;
+@using System.Web.Script.Serialization;
+@{
+    JavaScriptSerializer javaSerial = new JavaScriptSerializer();
+    if (Session["returnedJSON"] == null)
+    {
+        return;
+    }
+    var degrees = Session["returnedJSON"].ToString();
+    int k = 1;
+}
+
+<script src="~/Scripts/jquery-3.3.1.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var dgree = @Html.Raw(javaSerial.Serialize(degrees));
+
+        $("#accordion").accordion({
+            collapsible: true,
+            active: false,
+            heightStyle: "content"
+        });
+
+        var degreeJSON = JSON.parse(dgree);
+        if (degreeJSON.undergraduate != null) {
+            var h2 = document.getElementById("h2ID");
+            h2.textContent = "IST Undergraduate Majors";
+            $.each(degreeJSON.undergraduate, function (i, item) {
+                console.log($(this));
+                $('#hdr' + i).html("<p style='font-weight: bold; font-size: x-large;'>" + item.title + "</p><p style='font-weight: bold; font-size: large;'>" + item.description + '</p>');
+                var textString = "<ul style='font-style: italic;'>";
+                for (j = 0; j < item.concentrations.length; j++) {
+                    textString = textString + ("<li>" + item.concentrations[j] + "</li>");
+                }
+                textString = textString + "</ul>";
+                $('#div' + i).html(textString);
+            });
+        } else {
+            $.each(degreeJSON.graduate, function (i, item) {
+                console.log($(this));
+                var h2 = document.getElementById("h2ID");
+                h2.textContent = "IST Graduate Majors";
+                if (item.concentrations != undefined) {
+                    $('#hdr' + i).html("<p style='font-weight: bold; font-size: x-large;'>" + item.title + "</p><p style='font-weight: bold; font-size: large;'>" + item.description + '</p>');
+                    var textString = "<ul style='font-style: italic;'>";
+                
+                    for (j = 0; j < item.concentrations.length; j++) {
+                    textString = textString + ("<li>" + item.concentrations[j] + "</li>");
+                    }
+                } else {
+                    var degreeNameSplit = item.degreeName.split(' ');
+                    for (var i = 0; i < degreeNameSplit.length; i++) {
+                        degreeNameSplit[i] = degreeNameSplit[i].charAt(0).toUpperCase() + degreeNameSplit[i].slice(1);
+                    }
+                    var degreeName = degreeNameSplit.join(' ');
+
+                    $('#hdr' + i).html("<p style='font-weight: bold; font-size: x-large;'>" + degreeName + "</p>");
+                    var textString = "<ul style='font-style: italic;'>";
+
+                    for (j = 0; j < item.availableCertificates.length; j++) {
+                        textString = textString + ("<li>" + item.availableCertificates[j] + "</li>");
+                    }
+                }
+                textString = textString + "</ul>";
+                $('#div' + i).html(textString);
+            });
+        }
+    });
+</script>
+
+<form id="UnderGradForm">
+    <h2 id="h2ID"></h2>
+    <div id="accordion">
+        <h3 id="hdr0"></h3>
+        <div id="div0"></div>
+        <h3 id="hdr1"></h3>
+        <div id="div1"></div>
+        <h3 id="hdr2"></h3>
+        <div id="div2"></div>
+        <h3 id="hdr3"></h3>
+        <div id="div3"></div>
+    </div>
+</form>
+

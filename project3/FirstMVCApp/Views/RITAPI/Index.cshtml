@@ -1,0 +1,145 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<style type="text/css">
+    .ui-selectmenu-text {
+        font-size: small;
+    }
+
+    .ui-corner-all {
+        border-color: lightskyblue;
+    }
+
+    .ui-button, .ui-button-text .ui-button {
+        font-size: small;
+    }
+
+    .ui-widget {
+        font-size: small;
+    }
+</style>
+
+<script src="~/Scripts/jquery-3.3.1.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#Select1").selectmenu({
+            change: function (event, ui) {
+                console.log("change");
+                $.ajax({
+                    url: '@Url.Action("SelectDegree", "RITAPI")',
+                    data: { degree: ui.item.value },
+                    type: "GET",
+                    success: function (message) {
+                        if (message) {
+                            $("#dialog1").text(message);
+                            $("#dialog1").dialog("open");
+                        }
+                        else {
+                            window.location = '@Url.Action("SelectedDegree", "RITAPI")';
+                        }
+                    },
+                    error: function (thrownError) {
+                        console.log(thrownError.statusText);
+                        $("#dialog1").text(thrownError.statusText);
+                        $("#dialog1").dialog("open");
+                    }
+                });
+
+            }
+        });
+
+        $("#Button1").click(function () {
+                console.log("click");
+                $.ajax({
+                    url: '@Url.Action("GetFaculty", "RITAPI")',
+                    type: "GET",
+                    success: function (message) {
+                        if (message) {
+                            $("#dialog1").text(message);
+                            $("#dialog1").dialog("open");
+                        }
+                        else {
+                            window.location = '@Url.Action("SelectedFaculty", "RITAPI")';
+                        }
+                    },
+                    error: function (thrownError) {
+                        console.log(thrownError.statusText);
+                        $("#dialog1").text(thrownError.statusText);
+                        $("#dialog1").dialog("open");
+                    }
+                });
+        });
+
+                $("#Button2").click(function () {
+                console.log("click");
+                $.ajax({
+                    url: '@Url.Action("GetFaculty", "RITAPI")',
+                    type: "GET",
+                    success: function (message) {
+                        if (message) {
+                            $("#dialog1").text(message);
+                            $("#dialog1").dialog("open");
+                        }
+                        else {
+                            window.location = '@Url.Action("All", "RITAPI")';
+                        }
+                    },
+                    error: function (thrownError) {
+                        console.log(thrownError.statusText);
+                        $("#dialog1").text(thrownError.statusText);
+                        $("#dialog1").dialog("open");
+                    }
+                });
+        });
+
+        $("#dialog1").dialog({
+            autoOpen: false,
+            width: 400,
+            title: "RIT API",
+            buttons: [
+                {
+                    text: "OK",
+                    icons: {
+                        primary: "ui-icon-heart"
+                    },
+                    click: function () {
+                        $(this).dialog("close");
+                        window.location = '@Url.Action("Index", "RITAPI")';
+                    }
+                }]
+        });
+        
+    });
+</script>
+
+<form id="UnderGradForm">
+    <h2>Select An IST Degree Program</h2>
+    <div id="myDIv1">
+        <h3>Select Graduate or Undergraduate Degree Programs</h3>
+        <select id="Select1">
+            <option value="">Select Program</option>
+            <option value="under">Undergraduate</option>
+            <option value="grad">Graduate</option>
+        </select>
+    </div>
+    <div>
+        &nbsp;
+        &nbsp;
+    </div>
+    <h2>Faculty</h2>
+    <div id="myDIv2">
+        <h3>Faculty Information</h3>
+        <input id="Button1" class="ui-button ui-widget ui-corner-all" type="button" value="Get Info" />
+    </div>
+    <div>
+        &nbsp;
+        &nbsp;
+    </div>
+    <div id="myDIv3">
+        <h3>Get List Of All Faculty</h3>
+        <input id="Button2" class="ui-button ui-widget ui-corner-all" type="button" value="All Faculty" />
+    </div>
+    <div id="dialog1"></div>
+</form>
